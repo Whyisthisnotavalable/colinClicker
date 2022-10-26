@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Colin Clicker - 0 colins</title>
+<link rel="icon" type="image/x-icon" href="./images/cursor-favicon.png">
+<style>
+:root {
+	box-sizing: border-box;
+	font-family: monospace;
+	cursor: url("./images/cursor.png"), auto;
+}
+html {
+    margin: 0;
+    height: 100%;
+    background-image: linear-gradient(45deg, black, white, gray);
+	overflow: hidden;
+	cursor: url("./images/cursor.png"), auto;
+}
+.h1 {
+	background-image: linear-gradient(90deg, black, white, gray);
+	width: calc(100% - 2em);
+	height: 1em;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 1em;
+	position: absolute;
+	text-align: center;
+}
+.howmany {
+	position: absolute;
+	top: 4em;
+	right: 0;
+	left: 0;
+	text-align: center;
+	color: black;
+	padding: 3em;
+	font-size: 1.5em;
+	text-shadow: 0 0 5px white;
+	
+}
+.colin {
+    background-image: url("./images/colin.png");
+	background-blend-mode: normal;
+    right: calc(50% - 5em);
+    position: absolute;
+    top: 15em;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    width: 10em;
+    height: 10em;
+	transition: 200ms;
+	border-radius: 3px;
+	animation: uh 1000ms alternate infinite;
+	cursor: url("./images/cursor.png"), auto;
+}
+.colin:hover {
+	transform: scale(1.10);
+	background-blend-mode: difference;
+}
+.colin:active {
+	transform: scale(.99);
+}
+.footer {
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-image: radial-gradient(circle, white, lightgray, darkgray, gray);
+	text-align: center;
+	font-style: italic;
+	position: absolute;
+	padding: 1em;
+}
+.grid {
+	display: grid;
+	position: absolute;
+    width: 110px;
+    height: 400px;
+    background-color: lightgray;
+	left: 2em;
+	top: 5em;
+    grid-template-columns: auto auto;
+    gap: 0px;
+    border: 5px solid darkgray;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+}
+.upgrade {
+	background-color: rgba(255, 255, 255, 0.8);
+    border: 3px solid black;
+    font-size: .8em;
+    text-align: center;
+    padding: 20px;
+    width: 100px;
+    height: 100px;
+    margin: auto;
+	background-image: radial-gradient(circle, white, lightgray, darkgray, gray, black);
+	border-radius: 5px;
+}
+.upgrade:hover {
+		animation: upgrade 300ms ease-in-out infinite;
+}
+@keyframes uh {
+	from {
+		text-shadow: 0px -1px 0 white;
+	}
+	to {
+		text-shadow: 0px 1px 0 black;
+	}
+}
+@keyframes upgrade {
+	0% {
+		background-image: radial-gradient(circle, white, lightgray, darkgray, gray, black);
+	}
+	20% {
+		background-image: radial-gradient(circle, black, white, lightgray, darkgray, gray);
+	}
+	40% {
+		background-image: radial-gradient(circle, gray, black, white, lightgray, darkgray);
+	}
+	60% {
+		background-image: radial-gradient(circle, darkgray, gray, black, white, lightgray);
+	}
+	80% {
+		background-image: radial-gradient(circle, lightgray, darkgray, gray, black, white);
+	}
+	100% {
+		background-image: radial-gradient(circle, white, lightgray, darkgray, gray, black);
+	}
+}
+</style>
+</head>
+<body>
+<div class="h1">Colin Clicker</div>
+<div class="howmany"><span id="score">0</span> colin(s)</div>
+<button class="colin" id="colin">+<span id="howmany">1</span> colin(s)</button>
+<div class="upgradetitle">Sacrifice your Colins to gain upgrades</div>
+<div class="grid">
+	<button class="upgrade" id="upgradecolin" onclick="buyMultiplier()"></button>
+</div>
+<div class="footer">"Take out your anger out on Colin" &mdash; Richard, 2022</div>
+</body>
+<script>
+const game = ["colin", "howmuch", "firstCost"];
+game.colin = 0;
+game.howmuch = 1;
+game.firstCost = 100;
+let score = document.getElementById("score");
+let addScore = document.getElementById("howmany");
+let btn = document.getElementById("colin");
+let upgrade = document.querySelectorAll(".upgrade");
+btn.addEventListener("click", addColin, false);
+btn.addEventListener("contextmenu", function(event) {
+	event.preventDefault();
+	addColin();
+}); 
+if(game.colin == 0 && game.howmuch == 1 && Number(localStorage.colin) == "null") {
+	console.log("hi");
+} else {
+	load();
+}
+setInterval(function() {
+	document.title = "Colin Clicker - " + game.colin + " Colin(s)";
+	upgrade[0].innerHTML = "2X mutiplier on colins [" + game.firstCost + "]";
+}, 100)
+function addColin() {
+	if(localStorage.colin) {
+		localStorage.colin = Number(localStorage.colin) + game.howmuch;
+	} else {
+		localStorage.colin = 1;
+	}
+	if(game.colin >= 10000) {
+		game.colin += game.howmuch;
+		score.innerHTML = game.colin.toExponential();
+	} else {
+		game.colin += game.howmuch;
+		score.innerHTML = game.colin;
+	}
+}
+function buyMultiplier() {
+	if(game.colin >= game.firstCost) {
+		game.howmuch = Number(game.howmuch * 2);
+		game.colin -= Number(game.firstCost);
+		game.firstCost = Math.floor(game.firstCost*3.5);
+		score.innerHTML = game.colin;
+		localStorage.colin = Number(game.colin);
+		localStorage.howmuch = Number(game.howmuch);
+		localStorage.firstCost = Number(game.firstCost);
+		addScore.innerHTML = game.howmuch;
+		upgrade[0].innerHTML = "2X mutiplier on colins [" + game.firstCost + "]";
+	} else {
+		alert("You need to take more anger out on colin." + " You need [" + game.firstCost + "] colins.");
+	}
+}
+function load() {
+	game.colin = Number(localStorage.colin);
+	game.howmuch = Number(localStorage.howmuch);
+	game.firstCost = Number(localStorage.firstCost);
+	if(game.colin >= 10000 ) {
+		score.innerHTML = game.colin.toExponential();
+		addScore.innerHTML = game.howmuch;
+		upgrade.innerHTML = game.firstCost;
+	} else {
+		score.innerHTML = game.colin;
+		addScore.innerHTML = game.howmuch;
+		upgrade.innerHTML = game.firstCost;
+	}
+}
+function save() {
+	localStorage.colin = Number(game.colin);
+	localStorage.howmuch = Number(game.howmuch);
+	localStorage.firstCost = Number(game.firstCost);
+}
+localStorage.setItem("colin", game.colin);
+localStorage.setItem("howmuch", game.howmuch);
+localStorage.setItem("firstCost", game.firstCost);
+//FUTURE ME: USE THE toFixed() METHOD
+</script>
+</html>
